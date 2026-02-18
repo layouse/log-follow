@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogTrack | Lojistik Gelir-Gider Takip</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --gray: #95a5a6;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+            padding-bottom: 40px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header */
+        header {
+            background: linear-gradient(to right, var(--dark), var(--primary));
+            color: white;
+            padding: 25px 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.2rem;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .logo span {
+            color: var(--secondary);
+        }
+        
+        /* Main Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 992px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Form Card */
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+        
+        .card-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 18px 25px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-header i {
+            font-size: 1.2rem;
+        }
+        
+        .card-body {
+            padding: 25px;
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 576px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        /* Records Section */
+        .records-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .record-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            border-left: 5px solid var(--primary);
+            transition: transform 0.3s;
+        }
+        
+        .record-card:hover {
+            transform: translateX(5px);
+        }
+        
+        .record-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .record-date {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .record-plate {
+            background-color: var(--dark);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .record-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .detail-label {
+            font-size: 0.85rem;
+            color: var(--gray);
+            margin-bottom: 3px;
+        }
+        
+        .detail-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .record-notes {
+            font-style: italic;
+            color: #555;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .record-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+        }
+        
+        /* Statistics */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+        
+        .stat-card:nth-child(2) {
+            border-top-color: var(--secondary);
+        }
+        
+        .stat-card:nth-child(3) {
+            border-top-color: var(--warning);
+        }
+        
+        .stat-card:nth-child(4) {
+            border-top-color: var(--danger);
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+        
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+        
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #ddd;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .record-details {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .card-body {
+                padding: 20px 15px;
+            }
+            
+            .record-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-truck-moving"></i>
+                    <h1>Log<span>Track</span></h1>
+                </div>
+                <div class="app-description">
+                    <p>Lojistik sektörü için kişisel gelir-gider takip sistemi</p>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <main class="container">
+        <div class="main-content">
+            <!-- Kayıt Ekleme Formu -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-plus-circle"></i> Yeni Kayıt Ekle
+                    </div>
+                    <div class="card-body">
+                        <form id="recordForm">
+                            <div class="form-group">
+                                <label for="date"><i class="far fa-calendar-alt"></i> Tarih</label>
+                                <input type="date" id="date" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="plate"><i class="fas fa-truck"></i> Plaka</label>
+                                <input type="text" id="plate" class="form-control" placeholder="34 ABC 123" required>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="startKm"><i class="fas fa-tachometer-alt"></i> Başlangıç KM</label>
+                                    <input type="number" id="startKm" class="form-control" placeholder="0" min="0" step="0.1" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="endKm"><i class="fas fa-tachometer-alt"></i> Bitiş KM</label>
+                                    <input type="number" id="endKm" class="form-control" placeholder="0" min="0" step="0.1" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="fuelLiters"><i class="fas fa-gas-pump"></i> Yakıt (Litre)</label>
+                                    <input type="number" id="fuelLiters" class="form-control" placeholder="0" min="0" step="0.1">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="fuelCost"><i class="fas fa-money-bill-wave"></i> Yakıt Tutarı (₺)</label>
+                                    <input type="number" id="fuelCost" class="form-control" placeholder="0" min="0" step="0.01">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="expenses"><i class="fas fa-receipt"></i> Masraflar (₺)</label>
+                                <input type="number" id="expenses" class="form-control" placeholder="Bakım, ceza, yemek vs." min="0" step="0.01">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="notes"><i class="far fa-sticky-note"></i> Notlar</label>
+                                <textarea id="notes" class="form-control" rows="3" placeholder="Özel durumlar, açıklamalar..."></textarea>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save"></i> Kaydı Ekle
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- İstatistikler -->
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <div class="stat-label">Toplam Kayıt</div>
+                        <div class="stat-value" id="totalRecords">0</div>
+                        <div class="stat-label">Adet</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Toplam Masraf</div>
+                        <div class="stat-value" id="totalExpenses">0 ₺</div>
+                        <div class="stat-label">Tüm kayıtlar</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Toplam Yakıt</div>
+                        <div class="stat-value" id="totalFuel">0 L</div>
+                        <div class="stat-label">Tüketim</div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-label">Toplam KM</div>
+                        <div class="stat-value" id="totalKm">0</div>
+                        <div class="stat-label">Kat Edilen Yol</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Kayıt Listesi -->
+            <div>
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-list"></i> Kayıt Geçmişi
+                    </div>
+                    <div class="card-body">
+                        <div id="recordsList" class="records-container">
+                            <!-- Kayıtlar buraya eklenecek -->
+                            <div class="empty-state" id="emptyState">
+                                <i class="fas fa-clipboard-list"></i>
+                                <h3>Henüz kayıt bulunmuyor</h3>
+                                <p>İlk kaydınızı eklemek için soldaki formu doldurun.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 20px;">
+                            <button id="clearAllBtn" class="btn btn-danger btn-block">
+                                <i class="fas fa-trash-alt"></i> Tüm Kayıtları Temizle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer class="container">
+        <p>LogTrack &copy; 2023 | Lojistik gelir-gider takip sistemi | Tüm kayıtlar tarayıcınızda saklanır</p>
+    </footer>
+    
+    <script>
+        // Uygulama verileri
+        let records = [];
+        
+        // DOM yüklendiğinde çalışacak
+        document.addEventListener('DOMContentLoaded', function() {
+            // Form submit işlemi
+            document.getElementById('recordForm').addEventListener('submit', addRecord);
+            
+            // Tüm kayıtları temizle butonu
+            document.getElementById('clearAllBtn').addEventListener('click', clearAllRecords);
+            
+            // Kayıtları yükle
+            loadRecords();
+            updateStatistics();
+        });
+        
+        // Kayıt ekleme fonksiyonu
+        function addRecord(e) {
+            e.preventDefault();
+            
+            // Form değerlerini al
+            const date = document.getElementById('date').value;
+            const plate = document.getElementById('plate').value.toUpperCase();
+            const startKm = parseFloat(document.getElementById('startKm').value);
+            const endKm = parseFloat(document.getElementById('endKm').value);
+            const fuelLiters = parseFloat(document.getElementById('fuelLiters').value) || 0;
+            const fuelCost = parseFloat(document.getElementById('fuelCost').value) || 0;
+            const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+            const notes = document.getElementById('notes').value;
+            
+            // Validasyon
+            if (endKm < startKm) {
+                alert('Bitiş KM, başlangıç KM\'den küçük olamaz!');
+                return;
+            }
+            
+            // Yeni kayıt nesnesi oluştur
+            const newRecord = {
+                id: Date.now(),
+                date,
+                plate,
+                startKm,
+                endKm,
+                fuelLiters,
+                fuelCost,
+                expenses,
+                notes,
+                totalKm: endKm - startKm
+            };
+            
+            // Kayıtları dizimize ekle
+            records.push(newRecord);
+            
+            // LocalStorage'a kaydet
+            saveRecords();
+            
+            // Formu sıfırla
+            document.getElementById('recordForm').reset();
+            
+            // Güncel tarihi formda göster
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            
+            // Listeyi ve istatistikleri güncelle
+            displayRecords();
+            updateStatistics();
+            
+            // Kullanıcıya bildirim göster (basit bir alert)
+            alert('Kayıt başarıyla eklendi!');
+        }
+        
+        // Kayıtları ekranda gösterme
+        function displayRecords() {
+            const recordsList = document.getElementById('recordsList');
+            const emptyState = document.getElementById('emptyState');
+            
+            // Eğer kayıt yoksa boş durumu göster
+            if (records.length === 0) {
+                recordsList.innerHTML = '';
+                recordsList.appendChild(emptyState);
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            // Boş durumu gizle
+            emptyState.style.display = 'none';
+            
+            // Kayıtları sırala (yeni kayıtlar üstte)
+            const sortedRecords = [...records].sort((a, b) => b.id - a.id);
+            
+            // Kayıt listesini oluştur
+            let recordsHTML = '';
+            
+            sortedRecords.forEach(record => {
+                recordsHTML += `
+                    <div class="record-card" data-id="${record.id}">
+                        <div class="record-header">
+                            <div class="record-date">${formatDate(record.date)}</div>
+                            <div class="record-plate">${record.plate}</div>
+                        </div>
+                        
+                        <div class="record-details">
+                            <div class="detail-item">
+                                <span class="detail-label">Mesafe</span>
+                                <span class="detail-value">${record.totalKm.toFixed(1)} km</span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label">Yakıt (L)</span>
+                                <span class="detail-value">${record.fuelLiters > 0 ? record.fuelLiters + ' L' : '-'}</span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label">Yakıt Tutarı</span>
+                                <span class="detail-value">${record.fuelCost > 0 ? record.fuelCost.toFixed(2) + ' ₺' : '-'}</span>
+                            </div>
+                            
+                            <div class="detail-item">
+                                <span class="detail-label">Masraflar</span>
+                                <span class="detail-value">${record.expenses > 0 ? record.expenses.toFixed(2) + ' ₺' : '-'}</span>
+                            </div>
+                        </div>
+                        
+                        ${record.notes ? `
+                            <div class="record-notes">
+                                <strong>Not:</strong> ${record.notes}
+                            </div>
+                        ` : ''}
+                        
+                        <div class="record-actions">
+                            <button class="btn btn-warning" onclick="editRecord(${record.id})">
+                                <i class="fas fa-edit"></i> Düzenle
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteRecord(${record.id})">
+                                <i class="fas fa-trash"></i> Sil
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            recordsList.innerHTML = recordsHTML;
+        }
+        
+        // Kayıt düzenleme fonksiyonu
+        function editRecord(id) {
+            const record = records.find(r => r.id === id);
+            
+            if (!record) return;
+            
+            // Form alanlarını doldur
+            document.getElementById('date').value = record.date;
+            document.getElementById('plate').value = record.plate;
+            document.getElementById('startKm').value = record.startKm;
+            document.getElementById('endKm').value = record.endKm;
+            document.getElementById('fuelLiters').value = record.fuelLiters || '';
+            document.getElementById('fuelCost').value = record.fuelCost || '';
+            document.getElementById('expenses').value = record.expenses || '';
+            document.getElementById('notes').value = record.notes || '';
+            
+            // Kaydı listeden sil
+            records = records.filter(r => r.id !== id);
+            
+            // Güncellemeleri kaydet ve göster
+            saveRecords();
+            displayRecords();
+            updateStatistics();
+            
+            // Kullanıcıya bildir
+            alert('Kayıt düzenleme moduna alındı. Değişiklikleri kaydetmek için "Kaydı Ekle" butonuna basın.');
+        }
+        
+        // Kayıt silme fonksiyonu
+        function deleteRecord(id) {
+            if (confirm('Bu kaydı silmek istediğinize emin misiniz?')) {
+                records = records.filter(r => r.id !== id);
+                saveRecords();
+                displayRecords();
+                updateStatistics();
+            }
+        }
+        
+        // Tüm kayıtları temizleme
+        function clearAllRecords() {
+            if (records.length === 0) {
+                alert('Temizlenecek kayıt bulunmamaktadır.');
+                return;
+            }
+            
+            if (confirm('TÜM kayıtları silmek istediğinize emin misiniz? Bu işlem geri alınamaz!')) {
+                records = [];
+                saveRecords();
+                displayRecords();
+                updateStatistics();
+                alert('Tüm kayıtlar başarıyla silindi.');
+            }
+        }
+        
+        // İstatistikleri güncelleme
+        function updateStatistics() {
+            // Toplam kayıt sayısı
+            document.getElementById('totalRecords').textContent = records.length;
+            
+            // Toplam masraflar
+            const totalExpenses = records.reduce((sum, record) => sum + record.expenses, 0);
+            document.getElementById('totalExpenses').textContent = totalExpenses.toFixed(2) + ' ₺';
+            
+            // Toplam yakıt
+            const totalFuel = records.reduce((sum, record) => sum + record.fuelLiters, 0);
+            document.getElementById('totalFuel').textContent = totalFuel.toFixed(1) + ' L';
+            
+            // Toplam KM
+            const totalKm = records.reduce((sum, record) => sum + record.totalKm, 0);
+            document.getElementById('totalKm').textContent = totalKm.toFixed(1);
+        }
+        
+        // Kayıtları localStorage'a kaydetme
+        function saveRecords() {
+            localStorage.setItem('logtrack_records', JSON.stringify(records));
+        }
+        
+        // Kayıtları localStorage'dan yükleme
+        function loadRecords() {
+            const storedRecords = localStorage.getItem('logtrack_records');
+            
+            if (storedRecords) {
+                records = JSON.parse(storedRecords);
+                // Eski kayıtlarda totalKm özelliği olmayabilir, ekleyelim
+                records.forEach(record => {
+                    if (!record.totalKm) {
+                        record.totalKm = record.endKm - record.startKm;
+                    }
+                });
+            }
+            
+            // Bugünün tarihini formda göster
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('date').value = today;
+            
+            // Kayıtları göster
+            displayRecords();
+        }
+        
+        // Tarihi formatlama
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const day = date.getDate().toString().padStart(2, '0');
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}.${month}.${year}`;
+        }
+    </script>
+</body>
+</html>
